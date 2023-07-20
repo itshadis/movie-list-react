@@ -1,47 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Banner from '../components/Detail/Banner';
 import Poster from '../components/Detail/Poster';
 import DetailList from '../components/Detail/DetailList';
 import Artist from '../components/Detail/Artist';
-
-const apiKey = import.meta.env.VITE_API_KEY;
-const detailURL = import.meta.env.VITE_MOVIE_DETAIL_URL;
+import PageLayout from '../layout/PageLayout';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMovieCaster, getMovieDetail } from '../redux/actions/movie';
 
 function Detail() {
   const { id } = useParams();
-  const [movieDetail, setMovieDetail] = useState([]);
-  const [caster, setCaster] = useState([]);
-  
+  const { 
+    getMovieDetailLoading,
+    getMovieDetailResult,
+    getMovieDetailError
+  } = useSelector(state => state.movieReducer);
+
+  const {
+    getMovieCasterLoading,
+    getMovieCasterResult,
+    getMovieCasterError
+  } = useSelector(state => state.movieReducer);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const fetchDetailMovie = async () => {
-      const dataMovies = await fetch(`${detailURL}/${id}?api_key=${apiKey}`);
-      const movies = await dataMovies.json();
-      setMovieDetail(movies);
-
-      const dataCaster = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`);
-      const caster = await dataCaster.json();
-      setCaster(caster.cast);
-    }
-    
-    fetchDetailMovie();
-  },[id]);
-
+    dispatch(getMovieDetail(id));
+    dispatch(getMovieCaster(id));
+  },[dispatch,id]);
+  
   return (
-    <>
+    <PageLayout>
       <div className='w-full bg-gradient-to-t from-black via-transparent via-20% to-black to-90%'>
         <div className='w-full overflow-hidden relative'>
-          <Banner movieDetail={movieDetail} />
-          <div className='w-full h-full absolute bottom-0 bg-gradient-to-t from-black'></div>
+          {getMovieDetailResult ? (
+            <>
+              <Banner movieDetail={getMovieDetailResult} />
+              <div className='w-full h-full absolute bottom-0 bg-gradient-to-t from-black'></div>
+            </>
+          ) : getMovieDetailLoading ? (
+              <div className='w-full h-[600px] flex justify-center items-center text-3xl text-white font-semibold'>Loading...</div>
+          ) : (
+            <div>{getMovieDetailError ? getMovieDetailError : "Empty Data"}</div>
+          )
+          }
         </div>
         <div className='w-[90%] mx-auto flex flex-col sm:flex-row relative gap-4 sm:gap-10'>
-          <Poster movieDetail={movieDetail} />
-          <DetailList movieDetail={movieDetail} />
+          {getMovieDetailResult ? (
+            <>
+              <Poster movieDetail={getMovieDetailResult} />
+              <DetailList movieDetail={getMovieDetailResult} />
+            </> 
+          ) : getMovieDetailLoading ? (
+            <div className='w-[90%] mx-auto h-[600px] text-3xl text-white font-semibold'>Loading...</div>
+          ) : (
+            <div>{getMovieDetailError ? getMovieDetailError : "Empty Data"}</div>
+          )
+          } 
         </div>
-        <Artist caster={caster} />
+        {getMovieCasterResult ? (
+          <Artist caster={getMovieCasterResult} />
+        ) : getMovieCasterLoading ? (
+          <div className='w-[90%] mx-auto text-3xl text-white font-semibold'>Loading...</div>
+        ) : (
+          <div>{getMovieCasterError ? getMovieCasterError : "Empty Data"}</div>
+        )
+        }
       </div>
       <hr />
-    </>
+    </PageLayout>
   );
 }
 

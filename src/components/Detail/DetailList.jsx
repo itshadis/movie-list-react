@@ -1,7 +1,4 @@
-import React, { useState } from 'react'
-
 function DetailList({movieDetail}) {
-  const [isShow, setIsShow] = useState(false);
 
   return (
     <div className='flex flex-col md:flex-row flex-1 gap-1 text-white -translate-y-16 sm:translate-y-0 md:mt-4'>

@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
-import { Link, useNavigate, NavLink } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate, NavLink } from 'react-router-dom';
+import { users } from '../redux/actions/users';
 
 function Header() {
+  const { user } = useSelector(state => state.userReducer);
   const [isShow, setIsShow] = useState(false);
-  const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-white transition ease transform duration-300 md:hidden`;
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const genericHamburgerLine = `h-1 w-6 my-1 rounded-full bg-white transition ease transform duration-300 md:hidden`;
 
   const handleOnChange = (e) => {
     e.preventDefault();
@@ -25,6 +29,12 @@ function Header() {
     e.preventDefault();
 
     setIsShow(!isShow)
+  }
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    dispatch(users({email: null, password: null, isLogin: false}))
+    navigate('/')
   }
   
   return (
@@ -64,14 +74,20 @@ function Header() {
         <div className='hidden md:block'>
           <ul className='flex gap-4'>
             <NavLink className='hover:-translate-y-[1px]' to='/'>Home</NavLink>
-            <NavLink className='hover:-translate-y-[1px]' to='top-rated'>Top Rated</NavLink>
-            <NavLink className='hover:-translate-y-[1px]' to='upcoming'>Upcoming</NavLink>
+            <NavLink className='hover:-translate-y-[1px]' to='/top-rated'>Top Rated</NavLink>
+            <NavLink className='hover:-translate-y-[1px]' to='/upcoming'>Upcoming</NavLink>
           </ul>
         </div>
-        <div className='hidden md:block'>
+        <div className='hidden md:flex gap-2'>
           <form onSubmit={handleSubmit}>
             <input className='md:w-60 lg:w-80 rounded-xl text-black focus:ring-black focus:border-black'  onChange={handleOnChange} type="text" placeholder='Search Movie Here...' />
           </form>
+          {user.isLogin ? (
+            <button onClick={handleLogout} className='bg-orange-500 px-5 text-xl text-white font-medium rounded-lg hover:bg-orange-600'>Logout</button>
+          ) : (
+            <button className='bg-orange-500 px-5 text-xl text-white font-medium rounded-lg hover:bg-orange-600'><Link to='/login'>Login</Link></button>
+          )
+          }
         </div>
         {/*Hidden, block when md*/}
       </div>

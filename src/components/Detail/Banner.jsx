@@ -1,5 +1,3 @@
-import React from 'react'
-
 const largeImgURL = import.meta.env.VITE_LARGE_IMAGE_URL;
 
 function Banner({movieDetail}) {

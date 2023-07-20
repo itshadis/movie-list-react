@@ -11,7 +11,7 @@ function Card({img, title, rating}) {
           <span className='text-xs font-thin sm:font-bold'>{title}</span>
           <div className='flex flex-row items-center gap-1 mt-1'>
             <span><img className='w-2 sm:w-3' src={star} alt="" /></span>
-            <span className='text-xs font-thin sm:font-normal'>{rating}</span>
+            <span className='text-xs font-thin sm:font-normal'>{rating.toFixed(1)}</span>
           </div>
         </div>
       </div>

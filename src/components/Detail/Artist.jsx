@@ -1,5 +1,3 @@
-import React from 'react'
-
 const imgURL = import.meta.env.VITE_IMGURL;
 
 function Artist({caster}) {
